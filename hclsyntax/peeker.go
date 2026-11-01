@@ -64,7 +64,8 @@ func (p *peeker) NextRange() hcl.Range {
 
 func (p *peeker) PrevRange() hcl.Range {
 	if p.NextIndex == 0 {
-		return p.NextRange()
+		// Include leading comments when no tokens have been read yet.
+		return p.Tokens[0].Range
 	}
 
 	return p.Tokens[p.NextIndex-1].Range

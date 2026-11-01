@@ -65,3 +65,12 @@ func BenchmarkLexConfig(b *testing.B) {
 
 	T = tokens
 }
+
+func TestParseConfigLeadingCommentRange(t *testing.T) {
+	src := []byte("/*\n comment\n*/\n")
+	file, _ := ParseConfig(src, "test.hcl", hcl.InitialPos)
+	want := hcl.Range{Filename: "test.hcl", Start: hcl.InitialPos, End: hcl.Pos{Line: 4, Column: 1, Byte: len(src)}}
+	if got := file.Body.(*Body).Range(); got != want {
+		t.Errorf("wrong range %#v; want %#v", got, want)
+	}
+}
