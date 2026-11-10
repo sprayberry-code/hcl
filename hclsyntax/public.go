@@ -22,6 +22,9 @@ func ParseConfig(src []byte, filename string, start hcl.Pos) (*hcl.File, hcl.Dia
 	peeker := newPeeker(tokens, false)
 	parser := &parser{peeker: peeker}
 	body, parseDiags := parser.ParseBody(TokenEOF)
+	// The top-level body starts at the first token, including any leading
+	// comments that the parser skips over.
+	body.SrcRange.Start = tokens[0].Range.Start
 	diags = append(diags, parseDiags...)
 
 	// Panic if the parser uses incorrect stack discipline with the peeker's

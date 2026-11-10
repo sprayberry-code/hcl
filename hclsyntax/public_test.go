@@ -9,6 +9,18 @@ import (
 	"github.com/hashicorp/hcl/v2"
 )
 
+func TestParseConfigLeadingMultilineComment(t *testing.T) {
+	src := []byte("/*\n comment\n*/\nblock {}\n")
+	file, diags := ParseConfig(src, "test.hcl", hcl.InitialPos)
+	if diags.HasErrors() {
+		t.Fatal(diags)
+	}
+	want := hcl.Range{Filename: "test.hcl", Start: hcl.InitialPos, End: hcl.Pos{Line: 5, Column: 1, Byte: len(src)}}
+	if got := file.Body.(*Body).Range(); got != want {
+		t.Errorf("wrong range %#v; want %#v", got, want)
+	}
+}
+
 func TestValidIdentifier(t *testing.T) {
 	tests := []struct {
 		Input string
